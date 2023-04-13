@@ -22,7 +22,32 @@ continue ...
 
 ### Dataset
 
+1. emotional classification dataset (416809 rows and 2 columns)
+
+
+|   Fig. 1  |   Fig. 2   |
+| :-------: | :-------: |
+| <img width="931" alt="截屏2023-04-12 下午8 49 21" src="https://user-images.githubusercontent.com/82795673/231626160-b49ce809-3482-487e-9839-68b819b9ecaa.png"> | <img width="165" alt="截屏2023-04-12 下午8 53 59" src="https://user-images.githubusercontent.com/82795673/231626453-00866996-59af-4329-839e-71fdc74a6720.png"> |
+
+2. Yelp reviews
+- training data (559999 rows × 2 columns)
+- testing data (37999 rows × 2 columns)
+
+
+STEP 1: to build emotion classificatioin model
+- initalize BERT and AdamW optimizer
+- map the emotion labels to integer value (labels_dict dictionary) to train and validate the bert model
+- perform inference
+- xxxxxx
+
+
+
 ### Model
+
+<img width="933" alt="截屏2023-04-13 下午12 10 40" src="https://user-images.githubusercontent.com/82795673/231834393-1c6dd5e2-ab7e-45ac-a591-94d34a32154c.png">
+
+<img width="733" alt="截屏2023-04-13 下午12 28 08" src="https://user-images.githubusercontent.com/82795673/231838072-e9cd96a0-280b-433b-87e1-97956d964a4f.png">
+
 
 ## Code Demonstration
 
