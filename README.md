@@ -167,12 +167,6 @@ while n_iter < steps_max:
         in_noise = [
             tmp_i_tok[x] if tmp_flag[x] == 1 else \
                 in_noisy[x] for x in range(n_input)]
-        
-        labels_array[n_index] = tmp_label
-        if p_noise > 0.0:
-            sentence_tok[n_index, 1:n_decode] = in_noise
-        else:
-            sentence_tok[n_index, 1:n_decode] = tmp_i_tok
         ...
     
     tmp_loss = sub_batch_train_step(
