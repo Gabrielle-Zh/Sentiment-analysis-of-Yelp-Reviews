@@ -96,10 +96,13 @@ vocab_size = len(vocab_list)
 
 ```python
 # Parameters. #
+#the probability of applying dropout noise to the input data
 p_noise = 0.10
+#maximum gradient value allowed during training
 grad_clip = 1.00
-
+#maximum number of training steps
 steps_max  = 10000
+#the number of emotion classes
 n_classes  = len(labels_dict)
 batch_size = 256
 sub_batch  = 64
@@ -134,6 +137,7 @@ y_valid = [
 y_train = [
     labels_dict[x] for x in train_data["emotions"].values]
 
+#the integer values for special tokens added to the vocabulary
 cls_token = word2idx["<cls>"]
 pad_token = word2idx["<pad>"]
 unk_token = word2idx["<unk>"]
@@ -147,6 +151,7 @@ eos_token = word2idx["<eos>"]
 while n_iter < steps_max:
     # Constant warmup rate
     step_val = float(max(n_iter+1, warmup_steps))**(-0.5)
+    #a learning rate is calculated based on the step number and the warmup schedule
     learn_rate_val = float(hidden_size)**(-0.5) * step_val
     
     # select a random batch of training data
@@ -217,10 +222,13 @@ training and validation progress of the model:
   <img src="https://user-images.githubusercontent.com/82795673/232249729-21c9fda5-3605-4c2a-aebf-85cf17bf0bbd.jpg" alt="training_loss" width="550"/>
 </p>
 
+after 2,000 iterations, the model has achieved a training loss of around 1.4, which indicates that the model is fitting the training data well
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/82795673/232250364-c7a5a62b-2daf-4562-8d89-ef112c11577f.jpeg" alt="validation_accuracy" width="550"/>
 </p>
+
+validation accuracy is greater than 0.90, which suggests that the model is generalizing well to unseen data
 
 ### STEP 2: Train BERT Polarity Classifier
 
@@ -264,6 +272,7 @@ def clean_data(data_df, seq_len=9999):
 ```python
 train_df = pd.read_csv(tmp_path + "train.csv")
 train_df.columns = ["label", "text"]
+# the input sequences will be truncated to a maximum of 100 tokens
 maximum_seq_len  = 100
 
 # Process the train dataset. #
@@ -294,12 +303,12 @@ word_2_idx = dict([(
 bert_model = bert.BERT_Classifier(
     num_class, num_layers, num_heads, 
     hidden_size, ffwd_size, word_2_idx, 
-    seq_length + 3, p_keep=prob_keep)
+    seq_length + 3, p_keep=prob_keep) #  ‘p_keep’ is the probability of keeping a neuron active during dropout
 bert_optimizer = tfa.optimizers.AdamW(
     weight_decay=1.0e-4)
 ...
 
-#part2: set up the parameters and settings for training the BERT model
+#part2: set up the parameters and settings for training the BERT model...
 # Train the Transformer model
 tmp_in_seq  = np.zeros(
     [batch_size, seq_length+3], dtype=np.int32)
@@ -359,6 +368,7 @@ while n_iter < maximum_iter:
     ckpt.step.assign_add(1)
     
     tot_loss += tmp_loss.numpy()
+    # For every display_step iteration, the accuracy of the network is calculated on the test data
     if n_iter % display_step == 0:
         # For simplicity, get the test accuracy #
         # instead of validation accuracy.       #
@@ -385,6 +395,7 @@ while n_iter < maximum_iter:
             pred_labels == test_labels, 1, 0)) / num_test
         del pred_labels
         
+        # keeps track of the total loss and the average loss per iteration
         end_tm = time.time()
         avg_loss = tot_loss / display_step
         tot_loss = 0.0
@@ -432,8 +443,8 @@ weighted avg       0.93      0.93      0.93     37999
 
 
 ## Critical Analysis
-1. advantage:
-2. Limitations and areas for improvement: While the BERT model has shown to be highly effective for a variety of natural language processing tasks, it still has some limitations and areas for improvement. One major limitation is the high computational cost required for training and fine-tuning the model, which can make it difficult to scale up to larger datasets or models. Additionally, while the model is highly effective at capturing contextual information, it may still struggle with certain types of linguistic phenomena such as negation or sarcasm. Finally, the use of pre-training objectives such as MLM and NSP may not always be optimal for certain tasks or datasets, and there is ongoing research to explore alternative pre-training objectives that may be more effective for specific tasks.
+1. advantage: emotion classification model and YELP polarity model performs well in identifying the different classes.
+2. limitations and areas for improvement: While the BERT model has shown to be highly effective for a variety of natural language processing tasks, it still has some limitations and areas for improvement. One major limitation is the high computational cost required for training and fine-tuning the model, which can make it difficult to scale up to larger datasets or models. Additionally, while the model is highly effective at capturing contextual information, it may still struggle with certain types of linguistic phenomena such as negation or sarcasm.
 
 ## Links
 datasets: https://github.com/tensorflow/datasets/blob/master/tensorflow_datasets/text/yelp_polarity.py
