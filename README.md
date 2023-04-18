@@ -9,7 +9,7 @@
   - performed at different levels, such as document level (determining the overall sentiment of a document), sentence level (determining the sentiment of each sentence), or aspect level (determining the sentiment of specific aspects or entities mentioned in the text)
   - challenges:
     - to represent the text data in a way that machine learning algorithms can understand
-    - to deal with the nuances and complexities of human language, such as sarcasm, irony, and ambiguity, which can affect the accuracy of the predictions
+    - to deal with the nuances and complexities of human language, such as irony, and ambiguity, which can affect the accuracy of the predictions
 - Machine translation: converting text from one language to another
 - Named entity recognition: identifying and extracting named entities such as names, organizations, and locations from text
 - Question answering: answering questions posed in natural language, such as the ones used by chatbots or virtual assistants
