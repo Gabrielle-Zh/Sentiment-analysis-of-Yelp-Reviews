@@ -21,6 +21,8 @@ continue ...
 ## Model
 
 <img width="933" alt="截屏2023-04-13 下午12 10 40" src="https://user-images.githubusercontent.com/82795673/231834393-1c6dd5e2-ab7e-45ac-a591-94d34a32154c.png">
+During pre-training, the model is trained on unlabeled data over different pre-training tasks. For finetuning, the BERT model is first initialized with the pre-trained parameters, and all of the parameters are fine-tuned using labeled data from the downstream tasks. Each downstream task has separate fine-tuned models, even though they are initialized with the same pre-trained parameters. A distinctive feature of BERT is its unified architecture across different tasks. There is minimal difference between the pre-trained architecture and the final downstream architecture.
+
 
 <img width="733" alt="截屏2023-04-13 下午12 28 08" src="https://user-images.githubusercontent.com/82795673/231838072-e9cd96a0-280b-433b-87e1-97956d964a4f.png">
 
