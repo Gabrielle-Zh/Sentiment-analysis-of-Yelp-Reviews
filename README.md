@@ -38,7 +38,7 @@ continue ...
 - testing data (37999 rows × 2 columns)
 
 
-### STEP I: Build Emotion Classificatioin Model
+### STEP I: Build an Emotion Classificatioin Model
 
 1. First, we split the full data into training and validation sets. It then creates a dictionary that maps each emotion label to a unique integer index and a dictionary that maps each integer index back to its corresponding emotion label.
 
