@@ -140,14 +140,16 @@ unk_token = word2idx["<unk>"]
 eos_token = word2idx["<eos>"]
 ```
 
-4. we implement a training loop for a BERT-based model, with a few modifications for denoising autoencoder pre-training
+4. we implement a training loop for a BERT-based model,
 
 ```python
+# steps_max = 10000
 while n_iter < steps_max:
-    # Constant warmup rate. #
+    # Constant warmup rate
     step_val = float(max(n_iter+1, warmup_steps))**(-0.5)
     learn_rate_val = float(hidden_size)**(-0.5) * step_val
     
+    # select a random batch of training data
     batch_sample = np.random.choice(
         num_data, size=batch_size, replace=False)
     
@@ -155,10 +157,7 @@ while n_iter < steps_max:
     sentence_tok[:, :] = pad_token
     sentence_tok[:, 0] = cls_token
     for n_index in range(batch_size):
-        tmp_index = batch_sample[n_index]
-        tmp_label = y_train[tmp_index]
-        tmp_i_tok = x_train[tmp_index]
-        
+        ...
         # Generate noise. #
         n_input  = len(tmp_i_tok)
         n_decode = n_input + 1
@@ -169,6 +168,7 @@ while n_iter < steps_max:
                 in_noisy[x] for x in range(n_input)]
         ...
     
+    # train on sub-batches of the data
     tmp_loss = sub_batch_train_step(
         bert_model, sub_batch, 
         sentence_tok, labels_array, bert_optim, 
@@ -207,7 +207,8 @@ while n_iter < steps_max:
         tot_loss = 0.0
         elapsed_tm = (time.time() - start_tm) / 60
         ......
- 
+ ## It generates noise in the input data and trains the model to reconstruct the original input from the noisy version. 
+ ## The training loop also includes a validation step to monitor the accuracy of the model
 ```
 
 training and validation progress of the model:
@@ -223,14 +224,16 @@ training and validation progress of the model:
 
 ### STEP 2: Train BERT Polarity Classifier
 
-1. tokenize the text data
+1. we first initialize a Counter() object to keep track of word frequencies, and then loop through each row of the data to clean and tokenize the text.
 
 ```python
 # Define the function to clean the data
 def clean_data(data_df, seq_len=9999):
     n_lines = len(data_df)
     
-    # Process the data. #
+    # Process the data.
+    
+    #keep track of word frequencies
     w_counter = Counter()
     data_list = []
     for n_line in range(n_lines):
@@ -245,7 +248,8 @@ def clean_data(data_df, seq_len=9999):
         tmp_tokens = [
             x for x in wordpunct_tokenize(
                 data_text.lower()) if x != ""]
-        
+                
+        # update the word frequency with the tokens and appends a tuple of the label and tokens to the data_list variable
         w_counter.update(tmp_tokens)
         data_list.append((data_label, tmp_tokens))
         
@@ -283,7 +287,8 @@ word_2_idx = dict([(
     word_vocab[x], x) for x in range(len(word_vocab))])
 ```
 
-3. train the bert model
+3. After saving the processed training data, the word vocabulary, and the idx_2_word and word_2_idx dictionaries to a pickle file, we try to train BERT polarity classifier
+
 ```python
 #part1:
 bert_model = bert.BERT_Classifier(
@@ -294,7 +299,7 @@ bert_optimizer = tfa.optimizers.AdamW(
     weight_decay=1.0e-4)
 ...
 
-#part2
+#part2: set up the parameters and settings for training the BERT model
 # Train the Transformer model
 tmp_in_seq  = np.zeros(
     [batch_size, seq_length+3], dtype=np.int32)
@@ -312,7 +317,7 @@ else:
         anneal_rate, anneal_pow)*initial_lr, 1.0e-5)
         
 ...
-#part3:
+#part3: a training loop for a neural network and works by updating the network's weights based on the training data
 # Update the neural network's weights
 tot_loss = 0.0
 start_tm = time.time()
@@ -343,6 +348,8 @@ while n_iter < maximum_iter:
     tmp_input  = tmp_in_seq
     tmp_output = tmp_out_lab
     
+    #The neural network is then trained on a sub-batch of the data, using the sub_batch_train_step function. 
+    #The weights of the network are updated based on the loss calculated in the training step
     tmp_loss = sub_batch_train_step(
         bert_model, sub_batch, 
         tmp_input, tmp_output, bert_optimizer, 
@@ -390,6 +397,8 @@ while n_iter < maximum_iter:
 
 4. Evaluation Metrics
 
+we have got the evaluation report for the text classification model on emotional classification and Yelp reviews datasets
+
 The final evaluation on the validation dataset of the emotion classification model is as follows:
 ```
               precision    recall  f1-score   support
@@ -406,6 +415,8 @@ The final evaluation on the validation dataset of the emotion classification mod
 weighted avg       0.90      0.90      0.90    104203
 ```
 
+- Explain: the emotion classification model achieves high precision, recall, and F1 scores for most of the classes, indicating that it performs well in identifying the different classes. However, the recall for classes 3 and 5 is relatively lower than the other classes, which means that the model may struggle to identify these classes. The accuracy score of 0.90 indicates that the model is accurate in its predictions, and the macro and weighted averages suggest that the model performs well overall.
+
 The evaluation on the validation dataset of YELP polarity model is as follows:
 ```
               precision    recall  f1-score   support
@@ -417,7 +428,7 @@ The evaluation on the validation dataset of YELP polarity model is as follows:
    macro avg       0.93      0.93      0.93     37999
 weighted avg       0.93      0.93      0.93     37999
 ```
-
+- Explain: For YELP polarity model, the evaluation metrics are pretty high, and macro and weighted averages show that the model performs well in identifying both classes.
 
 
 ## Critical Analysis
