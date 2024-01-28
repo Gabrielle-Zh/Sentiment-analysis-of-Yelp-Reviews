@@ -448,8 +448,5 @@ weighted avg       0.93      0.93      0.93     37999
 1. advantage: emotion classification model and YELP polarity model performs well in identifying the different classes.
 2. limitations and areas for improvement: While the BERT model has shown to be highly effective for a variety of natural language processing tasks, it still has some limitations and areas for improvement. One major limitation is the high computational cost required for training and fine-tuning the model, which can make it difficult to scale up to larger datasets or models. Additionally, while the model is highly effective at capturing contextual information, it may still struggle with certain types of linguistic phenomena such as negation or sarcasm.
 
-## Links
-datasets: https://github.com/tensorflow/datasets/blob/master/tensorflow_datasets/text/yelp_polarity.py
 
-Paper: https://arxiv.org/abs/1810.04805v2
 
